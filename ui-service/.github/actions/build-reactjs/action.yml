@@ -1,0 +1,13 @@
+name: Build ReactJS App
+description:  Reusable action to build a ReactJS App
+
+runs:
+  using: composite
+  steps:
+    - name: Build ReactJS App
+      shell: bash
+      run: |
+        npm cache clean --force
+        npm install --save-dev web-vitals
+        npm install
+        npm run build

@@ -1,0 +1,71 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: dev
+# ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-service
+  labels:
+    app: database-service
+spec:
+  selector:
+    app: database-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+      nodePort: 31001
+  type: NodePort
+  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-service
+  labels:
+    app: db-service
+spec:
+  selector:
+    matchLabels:
+      app: db-service
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: db-service
+        tier: db-service
+    spec:
+      serviceAccountName: default
+      # imagePullSecrets:
+      #   - name: regcred
+      containers:
+        - image: 774305578623.dkr.ecr.sa-east-1.amazonaws.com/database-service:latest
+          name: db-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+              name: db-service
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: file:/app/config/
+      volumes:
+        - name: config
+          configMap:
+            name: database-service-config
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database-service-config
+data:
+  application.properties: |
+    spring.application.name=database-service
+    spring.data.mongodb.uri=mongodb://admin:password@18.228.117.225/mydb?authSource=admin?retryWrites=true&loadBalanced=false&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1
+    server.port=8081
+    logging.level.org.springframework.data.mongodb=DEBUG

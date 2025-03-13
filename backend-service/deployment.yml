@@ -1,0 +1,64 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: dev
+# ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  labels:
+    app: backend-service
+spec:
+  selector:
+    app: backend-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+      nodePort: 31003
+  type: NodePort
+  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-service
+  labels:
+    app: backend-service
+spec:
+  selector:
+    matchLabels:
+      app: backend-service
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: backend-service
+        tier: backend-service
+    spec:
+      serviceAccountName: default
+      # imagePullSecrets:
+      #   - name: regcred
+      containers:
+        - image: 774305578623.dkr.ecr.sa-east-1.amazonaws.com/backend-service:dev
+          name: backend-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8082
+              name: backend-service
+          env:
+            - name: DATABASE_SERVICE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: database_service_url
+---
+
+apiVersion: v1
+kind: Secret
+metadata: 
+  name: backend-secret
+type: 0paque
+data:
+  database_service_url: aHR0cDovL2RhdGFiYXNlLXNlcnZpY2U6ODA4MQ==
