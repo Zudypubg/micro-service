@@ -11,14 +11,14 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                script {
-                    echo "Cloning GitHub repository..."
-                    git credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPO}"
-                }
-            }
-        }
+        // stage('Clone Repository') {
+        //     steps {
+        //         script {
+        //             echo "Cloning GitHub repository..."
+        //             git credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPO}"
+        //         }
+        //     }
+        // }
         stage('Build Images') {
             steps {
                 script {
