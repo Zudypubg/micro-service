@@ -6,9 +6,19 @@ pipeline {
         ECR_REGISTRY = "774305578623.dkr.ecr.${AWS_REGION}.amazonaws.com"
         EKS_CLUSTER = "my-eks-cluster"
         SERVICES = "database-service backend-service api-gateway ui-service"
+        GIT_REPO = "https://github.com/Zudypubg/micro-service.git"
+        GIT_CREDENTIALS_ID = "GitHub-PAT-Full-Access-4"
     }
 
     stages {
+        stage('Clone Repository') {
+            steps {
+                script {
+                    echo "Cloning GitHub repository..."
+                    git credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPO}"
+                }
+            }
+        }
         stage('Build Images') {
             steps {
                 script {
