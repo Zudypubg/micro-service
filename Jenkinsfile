@@ -74,7 +74,7 @@ pipeline {
                         dir(service) {
                             echo "Applying Kubernetes manifests for ${service}..."
                             sh """
-                            kubectl apply -f deployment.yaml
+                            kubectl apply -f deployment.yml
                             """
                         }
                     }
