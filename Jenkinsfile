@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'agent'
+    }
 
     environment {
         AWS_REGION = "sa-east-1"  // Thay thế bằng vùng AWS của bạn
